@@ -1,4 +1,5 @@
 SELECT 42 AS answer;   
 --This is a test
 --This is a commit test
---We keep testing
+--Fetch testing
+--Pull testing
