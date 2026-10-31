@@ -108,3 +108,133 @@ DROP SCHEMA IF EXISTS sandbox_db.testing;
 
 DROP DATABASE IF EXISTS sandbox_db;
 
+--CTAS
+
+CREATE DATABASE IF NOT EXISTS sandbox_db;
+USE sandbox_db;
+CREATE SCHEMA IF NOT EXISTS testing;
+CREATE TABLE IF NOT EXISTS testing.remote_jobs_snapshot AS
+SELECT
+    *
+FROM 
+    data_jobs.main.job_postings_fact AS jpf
+WHERE jpf.job_work_from_home = TRUE;
+
+SELECT * FROM information_schema.schemata;
+SELECT * FROM information_schema.tables
+WHERE table_catalog = 'sandbox_db';
+
+--VIEW
+
+CREATE OR REPLACE VIEW testing.us_health_insurance_jobs AS
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg
+
+FROM
+    data_jobs.main.job_postings_fact
+WHERE 
+    job_country = 'United States' 
+    AND job_health_insurance = TRUE;
+
+SELECT *
+FROM testing.us_health_insurance_jobs;
+
+--TEMP TABLE
+
+SELECT *
+FROM information_schema.tables
+WHERE table_catalog = 'sandbox_db';
+
+CREATE OR REPLACE TEMPORARY TABLE temp_skills_count AS
+SELECT 
+    sd.skills,
+    COUNT (job_id)
+FROM 
+    data_jobs.main.skills_job_dim AS sjd
+LEFT JOIN data_jobs.main.skills_dim AS sd
+    ON sjd.skill_id = sd.skill_id
+
+GROUP BY 
+    sd.skills
+
+ORDER BY
+    COUNT(job_id) DESC;
+
+SELECT *
+FROM temp_skills_count;
+
+TRUNCATE temp_skills_count;
+
+SELECT *
+FROM temp_skills_count;
+
+--Snapshot update
+
+TRUNCATE testing.remote_jobs_snapshot;
+
+INSERT INTO testing.remote_jobs_snapshot 
+
+SELECT
+    *
+FROM
+    data_jobs.main.job_postings_fact as jpf
+
+WHERE   
+    salary_year_avg > 100_000
+    AND job_work_from_home = TRUE;
+
+SELECT *
+FROM testing.remote_jobs_snapshot;
+
+--A pipeline
+
+CREATE OR REPLACE TEMPORARY TABLE top_companies AS
+SELECT
+    jpf.company_id AS company_id,
+    COUNT (job_id) AS job_postings
+FROM
+    data_jobs.main.job_postings_fact AS jpf
+GROUP BY 
+    jpf.company_id
+HAVING
+    COUNT(job_id) > 500
+ORDER BY 
+    COUNT(job_id) DESC;
+
+SELECT *
+FROM top_companies;
+
+CREATE OR REPLACE TABLE testing.top_company_details AS
+SELECT
+    cd.company_id,
+    cd.name,
+    cd.link,
+    tc.job_postings AS job_postings
+FROM 
+    data_jobs.main.company_dim AS cd
+INNER JOIN top_companies AS tc
+    ON cd.company_id = tc.company_id
+
+ORDER BY 
+    job_postings DESC;
+
+SELECT *
+FROM testing.top_company_details;
+
+CREATE OR REPLACE VIEW testing.vw_top_company_remote_jobs AS
+SELECT
+    *
+FROM
+    data_jobs.main.job_postings_fact AS jpf
+INNER JOIN testing.top_company_details as tcd 
+    ON jpf.company_id = tcd.company_id
+
+WHERE 
+    jpf.job_work_from_home = TRUE;
+
+
+SELECT *
+FROM testing.vw_top_company_remote_jobs;
