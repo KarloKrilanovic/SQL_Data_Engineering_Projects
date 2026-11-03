@@ -238,3 +238,65 @@ WHERE
 
 SELECT *
 FROM testing.vw_top_company_remote_jobs;
+
+--Subqueries
+--1
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg
+
+FROM
+    testing.remote_jobs_snapshot AS rjs
+
+WHERE 
+    job_title_short = 'Data Analyst' 
+    AND job_work_from_home = TRUE
+    AND salary_year_avg > (
+        SELECT 
+            AVG(salary_year_avg)
+        FROM 
+            testing.remote_jobs_snapshot
+        WHERE   
+            job_title_short = 'Data Analyst'
+            AND job_work_from_home = TRUE
+    )
+
+ORDER BY 
+    salary_year_avg DESC;
+
+--2
+
+SELECT
+    cd.name,
+    cd.link
+FROM
+    company_dim AS cd
+
+WHERE company_id IN (
+    SELECT
+        company_id
+    FROM 
+        job_postings_fact AS jpf
+    WHERE 
+        job_location = 'New York'
+);
+
+--3
+
+SELECT
+    tgt.skills
+FROM
+    skills_dim AS tgt
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM skills_job_dim As src
+    WHERE tgt.skill_id = src.skill_id
+);
+
+SELECT
+    COUNT (DISTINCT sd.skills)
+FROM
+    skills_dim AS sd
+ORDER BY COUNT (sd.skills) DESC;
