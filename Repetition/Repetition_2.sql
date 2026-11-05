@@ -291,7 +291,7 @@ FROM
     skills_dim AS tgt
 WHERE NOT EXISTS (
     SELECT 1
-    FROM skills_job_dim As src
+    FROM skills_job_dim AS src
     WHERE tgt.skill_id = src.skill_id
 );
 
@@ -300,3 +300,5 @@ SELECT
 FROM
     skills_dim AS sd
 ORDER BY COUNT (sd.skills) DESC;
+
+this is a test
