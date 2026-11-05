@@ -301,4 +301,83 @@ FROM
     skills_dim AS sd
 ORDER BY COUNT (sd.skills) DESC;
 
-this is a test
+--4
+
+WITH remote_salaries AS (
+    SELECT
+        cd.name AS name,
+        AVG(jpf.salary_year_avg)::INTEGER AS average_salary
+        
+    FROM 
+        job_postings_fact AS jpf
+    
+    INNER JOIN company_dim AS cd
+        ON jpf.company_id = cd.company_id
+    
+    WHERE 
+        job_work_from_home = TRUE
+        AND salary_year_avg IS NOT NULL
+    
+    GROUP BY
+        cd.name
+)
+
+SELECT
+    rs.name AS company_name,
+    rs.average_salary AS remote_top_salary
+    
+FROM 
+    remote_salaries AS rs
+
+ORDER BY
+    remote_top_salary DESC
+
+LIMIT 3;
+
+--5
+
+WITH remote_150k AS (
+    SELECT
+        *
+    FROM 
+        job_postings_fact
+    
+    WHERE
+        job_work_from_home = TRUE 
+        AND salary_year_avg > 150_000
+),
+
+skill_count AS (
+    SELECT
+        sd.skill_id AS skill_id,
+        sd.skills AS skills,
+        COUNT (sd.skills) AS demand
+    FROM
+        remote_150k AS r150k
+    
+    INNER JOIN skills_job_dim AS sjd
+        ON r150k.job_id = sjd.job_id
+    INNER JOIN skills_dim AS sd
+        ON sjd.skill_id = sd.skill_id
+
+    GROUP BY
+        sd.skills,
+        sd.skill_id
+
+)
+
+SELECT
+    sc.skills,
+    sc.demand
+
+FROM 
+    skill_count AS sc
+WHERE EXISTS (
+    SELECT 1
+    FROM data_jobs.main.skills_dim AS sd
+    WHERE sc.skill_id = sd.skill_id
+) AND sc.demand > 10
+
+ORDER BY 
+    sc.demand DESC;
+
