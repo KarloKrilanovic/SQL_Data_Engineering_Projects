@@ -212,7 +212,7 @@ The lead architect wants to evaluate the database's schema design.
     to the total number of rows in skills_job_dim. If the fact table has more rows, 
     output 'Star Schema'. Otherwise, output 'Snowflake Schema'.
 */
-
+/*
 CREATE OR REPLACE TEMP TABLE counter AS
 SELECT 
     CASE
@@ -235,8 +235,8 @@ FROM
 
 GROUP BY 
     table_categories;
+*/
 
-/*
 SELECT
     COUNT(CASE WHEN table_name LIKE '%fact%' THEN 1 END) AS fact_table_count,
     COUNT(CASE WHEN table_name LIKE '%dim%' THEN 1 END) AS dimension_table_count
@@ -246,26 +246,34 @@ WHERE
     table_catalog = 'data_jobs' 
     AND table_schema = 'main' 
     AND table_type = 'BASE TABLE';
-*/
+
 ----------------------------------------
+
 SELECT 
     table_name,
-    COUNT(table_name),
-    column_name
+    COUNT(table_name)
 
 FROM 
     information_schema.columns
 
 WHERE
-    column_name LIKE '%_id' AND
+    column_name LIKE '%\_id' ESCAPE '\' AND
     table_catalog = 'data_jobs' 
     AND table_schema = 'main' 
 
 GROUP BY 
-    table_name,
-    column_name
+    table_name
 
 ORDER BY 
     COUNT(table_name) DESC
 
 LIMIT 5;
+
+
+SELECT
+    CASE 
+        WHEN (SELECT COUNT(*) FROM data_jobs.main.job_postings_fact) > 
+             (SELECT COUNT(*) FROM data_jobs.main.skills_job_dim) 
+        THEN 'Star Schema'
+        ELSE 'Snowflake Schema'
+    END AS schema_design;
