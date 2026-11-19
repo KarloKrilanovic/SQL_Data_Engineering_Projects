@@ -7,10 +7,7 @@ DROP TABLE IF EXISTS skills_dim;
 
 CREATE TABLE IF NOT EXISTS company_dim (
     company_id INTEGER NOT NULL PRIMARY KEY,
-    name VARCHAR,
-    link VARCHAR,
-    link_google VARCHAR,
-    thumbnail VARCHAR 
+    name VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS skills_dim (
