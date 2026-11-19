@@ -140,7 +140,7 @@ SELECT array_struct
 FROM skills_arr_struct;
 
 --example
---build a flat skill &type table for co-workers to access job titles, salary info, skills and type in one table
+--build a flat skill & type table for co-workers to access job titles, salary info, skills and type in one table
 
 CREATE OR REPLACE TEMP TABLE job_skills_array_struct AS
 SELECT
