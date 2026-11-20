@@ -1,4 +1,4 @@
--- Step 4: DW- Create skills demand mart
+-- Step 4: DW - Create skills demand mart
 
 DROP SCHEMA IF EXISTS skills_mart CASCADE;
 
