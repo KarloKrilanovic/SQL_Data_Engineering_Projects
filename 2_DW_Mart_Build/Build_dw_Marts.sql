@@ -8,3 +8,6 @@
 
 -- Step 3: DW - Create flat mart
 .read 03_Create_Flat_Mart.sql
+
+-- Step 4: DW - Create skills demand mart
+.read 04_Create_Skills_Mart.sql
