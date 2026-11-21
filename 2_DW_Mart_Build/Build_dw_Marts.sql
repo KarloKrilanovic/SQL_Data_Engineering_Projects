@@ -11,3 +11,9 @@
 
 -- Step 4: DW - Create skills demand mart
 .read 04_Create_Skills_Mart.sql
+
+-- Step 5: Mart - Create priority roles mart
+.read 05_Create_Priority_Mart.sql
+
+-- Step 6: Mart - Update priority roles mart
+.read 06_Update_Priority_Mart.sql
