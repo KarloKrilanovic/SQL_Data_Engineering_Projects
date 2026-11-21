@@ -4,7 +4,7 @@ DROP SCHEMA  IF EXISTS priority_mart CASCADE;
 
 CREATE SCHEMA priority_mart;
 
-SELECT '===Loading Roles for Priority Mart===0' AS info;
+SELECT '===Loading Roles for Priority Mart===' AS info;
 
 CREATE TABLE IF NOT EXISTS priority_mart.priority_roles (
     role_id INTEGER PRIMARY KEY,
