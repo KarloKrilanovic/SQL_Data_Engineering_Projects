@@ -17,3 +17,6 @@
 
 -- Step 6: Mart - Update priority roles mart
 .read 06_Update_Priority_Mart.sql
+
+-- Step 7: Mart - Create company mart
+.read 07_Create_Company_Mart.sql
